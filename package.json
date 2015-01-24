@@ -4,7 +4,7 @@
   "description": "TodoMVC structured with the Reactive-Aspen framework",
   "main": "lib/initializer.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node server.js"
   },
   "keywords": [
     "todomvc",
@@ -17,9 +17,7 @@
     "cookie-parser": "~1.3.3",
     "pando": "0.0.4",
     "reactive-aspen": "0.0.2",
-    "react-bridge": "0.0.2"
-  },
-  "scripts": {
-    "start": "node server.js"
+    "react-bridge": "0.0.2",
+    "react": "~0.12.2"
   }
 }
