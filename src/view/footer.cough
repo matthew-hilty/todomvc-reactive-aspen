@@ -1,0 +1,48 @@
+{ $button, $link }               = require '../vendor/adapters'
+classSet                         = require '../vendor/classSet'
+{ footer, li, span, strong, ul } = require '../vendor/DOM'
+{ pluralize }                    = require '../utilities'
+
+noProps = null
+
+AppFooter = (mode, count, completedCount) ->
+  return null unless count > 0
+
+  footer
+    id : 'footer'
+    countSpan (count - completedCount)
+    ul
+      id : 'filters'
+      allFilter mode
+      activeFilter mode
+      completedFilter mode
+    clearButton completedCount
+
+clearButton = \completedCount ->
+  return null unless completedCount > 0
+  label = "Clear completed (#{completedCount})"
+  $button ('ClearButton') ({ id: 'clear-completed' }, label)
+
+countSpan = \count ->
+  activeTodoWord = pluralize (count, 'item')
+  span
+    id : 'todo-count'
+    strong (noProps, count)
+    " #{activeTodoWord} left"
+
+getFilterClassName = (currentMode, filterMode) ->
+  classSet { selected: currentMode == filterMode }
+
+getFilterOption = ([busLabel, href, linkLabel, mode]) -> (currentMode) ->
+  linkProps = { href, className: getFilterClassName (mode, currentMode) }
+  li (noProps, $link busLabel (linkProps, linkLabel))
+
+fields = [
+  ['ActiveTodos',    '#/active',    'Active ',   'active'   ]
+  ['AllTodos',       '#/',          'All ',      'all'      ]
+  ['CompletedTodos', '#/completed', 'Completed', 'completed']
+]
+
+[activeFilter, allFilter, completedFilter] = fields.map getFilterOption
+
+module.exports = AppFooter

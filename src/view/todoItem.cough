@@ -1,0 +1,44 @@
+{ $button, $checkbox, $label } = require '../vendor/adapters'
+classSet                       = require '../vendor/classSet'
+{ createFactory }              = require '../vendor/React'
+{ div, li }                    = require '../vendor/DOM'
+todoItemInputClass             = require './todoItemInputClass'
+
+applyId = \id \adapter ->
+  adapter id
+
+IDifyAdapter = ([adapter, label]) -> (id) ->
+  adapter { id, label }
+
+TodoItem = (todoProps, editing) ->
+  { completed, id, title } = todoProps
+  className = classSet { completed, editing }
+
+  [$completionToggle, $deleteButton, $todoItemLabel] =
+    factories.map (applyId id)
+
+  li
+    key       : id
+    className : className
+    div
+      className : 'view'
+      $completionToggle
+        className : 'toggle'
+        checked   : completed
+        onChange  : true
+      $todoItemLabel
+        onDoubleClick : true
+        title
+      $deleteButton
+        className : 'destroy'
+        onClick   : true
+    todoItemInputFactory ({ autoPostFocus: editing, title, uuid: id })
+
+factories = [
+  [$checkbox, 'Toggle'       ]
+  [$button,   'DeleteButton' ]
+  [$label,    'TodoItemLabel'] ].map IDifyAdapter
+
+todoItemInputFactory = createFactory todoItemInputClass
+
+module.exports = TodoItem

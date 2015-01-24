@@ -1,0 +1,30 @@
+{ set, uuid } = require '../utilities'
+
+active = \todo ->
+  !todo.completed
+
+completed = \todo ->
+  todo.completed
+
+create = \title ->
+  { completed: false, id: uuid (), title: title }
+
+modifyCompletedStatus = \fn \todo ->
+  set ('completed', (fn todo), todo)
+
+recaption = (todo, newTitle) ->
+  set ('title', newTitle, todo)
+
+activate = modifyCompletedStatus (-> false)
+complete = modifyCompletedStatus (-> true)
+toggle   = modifyCompletedStatus \todo -> !todo.completed
+
+module.exports = {
+  active
+  activate
+  complete
+  completed
+  create
+  recaption
+  toggle
+}

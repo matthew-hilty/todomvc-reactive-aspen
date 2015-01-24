@@ -1,0 +1,18 @@
+defaultState   = require './default-state'
+{ initialize } = require './vendor/Aspen'
+NAMESPACE      = require './namespace'
+topViewFactory = require './view/app'
+{ store }      = require './utilities'
+viewImports    = require './view-imports'
+
+isEmpty = \array ->
+  array.length == 0
+
+appNodeId    = 'todoapp'
+cachedState  = store NAMESPACE
+initialState = if isEmpty cachedState then defaultState else cachedState
+
+initialize (appNodeId, topViewFactory, initialState, viewImports)
+
+require './controller/event-controllers'
+require './controller/router'

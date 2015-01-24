@@ -1,0 +1,19 @@
+{ h1, header } = require '../vendor/DOM'
+{ $text }      = require '../vendor/adapters'
+
+todosCaption = ->
+  h1 (null, 'todos')
+
+todoInput = $text 'NewTodoInput'
+
+AppHeader = \hasFocus ->
+  header
+    id : 'header'
+    todosCaption ()
+    todoInput
+      id          : 'new-todo'
+      placeholder : 'What needs to be done?'
+      onKeyDown   : true
+      autoFocus   : hasFocus
+
+module.exports = AppHeader

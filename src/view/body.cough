@@ -1,0 +1,29 @@
+{ $checkbox }      = require '../vendor/adapters'
+{ getTodosByMode } = require '../model/todoList'
+{ section, ul }    = require '../vendor/DOM'
+TodoItem           = require './todoItem'
+
+AppBody = (props, checked) ->
+  { editing, mode, todos } = props
+
+  return null unless todos.length > 0
+
+  todoItems = getTodosByMode(todos, mode).map(getTodoView(editing))
+
+  section
+    id : 'main'
+    $mainToggle
+      id       : 'toggle-all'
+      checked  : checked
+      onChange : true
+    ul
+      id : 'todo-list'
+      todoItems
+
+getTodoView = \editableID \todo ->
+  editing = todo.id == editableID
+  TodoItem (todo, editing)
+
+$mainToggle = $checkbox 'ToggleAll'
+
+module.exports = AppBody

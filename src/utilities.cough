@@ -1,0 +1,69 @@
+compose = \fns ->
+  fns.reduceRight composeReducer
+
+composeReducer = (composedFn, fn) -> (args...) ->
+  fn (composedFn args...)
+
+extend = (base, objects...) ->
+  for obj in objects
+    for own key of obj
+      base[key] = obj[key]
+  return base
+
+identity = \val ->
+  val
+
+isArray = \val ->
+  if Array.isArray then Array.isArray val else val instanceof Array
+
+isObject = \val ->
+  Object.prototype.toString.call val == '[object Object]'
+
+pluralize = (count, word) ->
+  if count == 1 then word else word + 's'
+
+set = (key, prop, compositeValue) ->
+  copy = shallowCopy compositeValue
+  copy[key] = prop
+  copy
+
+shallowCopy = \val ->
+  switch
+    when isObject val
+      copy = {}
+      copy[key] = prop for own key, prop of val
+      copy
+    when isArray val
+      val.map identity
+    else
+      val
+
+store = (namespace, data) ->
+  if data
+    localStorage.setItem (namespace, stringify data)
+    return data
+
+  data = localStorage.getItem namespace
+  if data then JSON.parse data else []
+
+_uuid = (i, j) ->
+  nbr = switch i
+    when 12 then 4
+    when 16 then j & 3 | 8
+    else j
+  nbr.toString 16
+
+uuid = ->
+  id = ''
+
+  for i in [0...32]
+    random = Math.random () * 16 | 0
+    id += '-' if i in signposts
+    id += _uuid (i, random)
+
+  id
+
+signposts     = [8, 12, 16, 20]
+{ stringify } = JSON
+
+module.exports = { compose, extend, pluralize, set, store, uuid }

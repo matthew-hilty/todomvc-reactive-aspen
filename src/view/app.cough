@@ -1,0 +1,28 @@
+AppBody   = require './body'
+AppFooter = require './footer'
+AppHeader = require './header'
+{ div }   = require '../vendor/DOM'
+
+countCompleted = \todos ->
+  todos.reduce (countReducer, 0)
+
+countReducer = (count, todo) ->
+  if todo.completed then count + 1 else count
+
+headerHasFocus = \editing ->
+  editing == null
+
+TodoApp = \appState ->
+  { editing, mode, todos } = appState
+  completedCount = countCompleted todos
+  fullCount      = todos.length
+  allCompleted   = completedCount == fullCount
+
+  div (
+    null
+    AppHeader (headerHasFocus editing)
+    AppBody (appState, allCompleted)
+    AppFooter (mode, fullCount, completedCount)
+  )
+
+module.exports = TodoApp

@@ -1,0 +1,56 @@
+{ compose }                            = require '../utilities'
+{ connect, onValue, plugIntoTerminus } = require '../vendor/Controller'
+{ composing, mapping }                 = require('../vendor/Pando').transforms
+
+{
+  cacheAppData
+  editAppState
+  endEditing
+  extractNewTodo
+  filteringEnter
+  filteringEscape
+  removeCompletedTodos
+  removeTodo
+  toggleAllTodos
+  toggleTodo
+  restoreOrigTitle
+  saveCurrentTitle 
+  storeCookie
+  storeTitle
+} = require './transforms'
+
+nodes = [
+  '$clear-clicks'
+  '$delete-clicks'
+  '$new-todo-keydowns'
+  '$toggle-all-clicks'
+  '$toggle-clicks'
+  '$edit-blurs'
+  '$edit-keydowns'
+  '$edit-keydowns'
+]
+
+transforms = [
+  mapping removeCompletedTodos
+  mapping removeTodo
+  compose [filteringEnter, (mapping extractNewTodo)]
+  mapping toggleAllTodos
+  mapping toggleTodo
+  mapping (endEditing saveCurrentTitle)
+  compose [filteringEnter,  mapping (endEditing saveCurrentTitle)]
+  compose [filteringEscape, mapping (endEditing restoreOrigTitle)]
+]
+
+connect (nodes, 'cacher', -> transforms)
+
+connect 'cacher', 'cookieManager', ->
+  composing cacheAppData
+
+plugIntoTerminus 'cookieManager', ->
+  composing storeCookie
+
+plugIntoTerminus '$todo-label-doubleclicks', ->
+  mapping editAppState
+
+onValue 'todo-in-edit', \capsule ->
+  storeTitle (capsule.event.target.value)

@@ -1,0 +1,19 @@
+{ createClass }      = require '../vendor/React'
+{ $text }            = require '../vendor/adapters'
+UpdatePostFocusMixin = require '../mixins/UpdatePostFocusMixin'
+
+_todoItemInput = \id ->
+  $text { id, label: 'TodoItemInput' }
+
+todoItemInputClass = createClass
+  mixins: [UpdatePostFocusMixin]
+  render: ->
+    { title, uuid } = this.props
+    _todoItemInput (uuid)
+      className     : 'edit'
+      defaultValue  : title
+      onBlur        : true
+      onChange      : true
+      onKeyDown     : true
+
+module.exports = todoItemInputClass

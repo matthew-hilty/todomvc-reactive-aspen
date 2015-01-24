@@ -1,0 +1,45 @@
+{ active, activate, complete, completed, create, recaption, toggle } =
+  require './todo'
+
+{ set } = require '../utilities'
+
+addTodo = (todoList, caption) ->
+  todoList.concat (create caption)
+
+getTodosByMode = (todos, mode) ->
+  switch mode
+    when 'active'    then removeCompleted todos
+    when 'all'       then todos
+    when 'completed' then removeActive todos
+
+recaptionTodo = (todos, id, caption) ->
+  todos.map \todo ->
+    if todo.id == id then recaption (todo, caption) else todo
+
+removeActive = \todos ->
+  todos.filter completed
+
+removeCompleted = \todos ->
+  todos.filter active
+
+removeTodo = (todos, id) ->
+  todos.filter \todo -> todo.id != id
+
+toggleTodo = (todos, id) ->
+  todos.map \todo -> if todo.id == id then (toggle todo) else todo
+
+toggleAll = \todos ->
+  allCompleted = todos.every completed
+  manage = if allCompleted then activate else complete
+  todos.map manage
+
+module.exports = {
+  add             : addTodo
+  getTodosByMode  : getTodosByMode
+  recaption       : recaptionTodo
+  removeActive    : removeActive
+  removeCompleted : removeCompleted
+  remove          : removeTodo
+  toggle          : toggleTodo
+  toggleAll       : toggleAll
+}

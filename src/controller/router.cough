@@ -1,0 +1,34 @@
+{ connect, getEventStream, push } = require '../vendor/Controller'
+{ mapping }                       = require('../vendor/Pando').transforms
+NAMESPACE                         = require '../namespace'
+{ resetMode }                     = require '../model/appState'
+
+getLink = \href ->
+  document.querySelector("[href='" + href + "']")
+
+setModeTo = (type) -> () ->
+  push ($router-events, modes[type])
+
+updateMode = \capsule \appState ->
+  resetMode (appState, capsule.mode)
+
+$router-events = getEventStream '$router-events'
+
+$router-events.subscribe \capsule ->
+  link = getLink(capsule.href)
+  link.blur () if link
+
+connect ($router-events, 'cacher', -> mapping updateMode)
+
+modes =
+  active    : { href: '#/active',    mode: 'active'    }
+  all       : { href: '#/',          mode: 'all'       }
+  completed : { href: '#/completed', mode: 'completed' }
+
+# `Router` has been set on the global `window` object by another file.
+router = Router
+  '/'          : setModeTo 'all' 
+  '/active'    : setModeTo 'active'
+  '/completed' : setModeTo 'completed'
+
+router.init '/'
