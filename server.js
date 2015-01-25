@@ -8,7 +8,7 @@ var TodoApp      = require('./lib/view/app');
 
 var anchor   = '$TODOAPP$';
 var app      = express();
-var port     = process.env.port || 4000;
+var port     = process.env.PORT || 4000;
 var utf8     = { encoding: 'utf8' };
 var template = fs.readFileSync('./index.html', utf8);
 
