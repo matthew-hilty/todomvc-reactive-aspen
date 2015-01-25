@@ -66,4 +66,4 @@ uuid = ->
 signposts     = [8, 12, 16, 20]
 { stringify } = JSON
 
-module.exports = { compose, extend, pluralize, set, store, uuid }
+module.exports = { compose, extend, isObject, pluralize, set, store, uuid }
