@@ -2,6 +2,7 @@ var cookieParser = require('cookie-parser');
 var defaultState = require('./lib/default-state');
 var express      = require('express');
 var fs           = require('fs');
+var isObject     = require('./lib/utilities');
 var path         = require('path');
 var React        = require('react/addons');
 var TodoApp      = require('./lib/view/app');
@@ -13,7 +14,8 @@ var utf8     = { encoding: 'utf8' };
 var template = fs.readFileSync('./index.html', utf8);
 
 function getAppState(req) {
-  return JSON.parse(req.cookies.aspenTodoAppState) || defaultState;
+  var cookie = req.cookies.aspenTodoAppState;
+  return isObject(cookie) ? defaultState : JSON.parse(cookie);
 }
 
 function onStart() {
@@ -21,8 +23,8 @@ function onStart() {
 }
 
 function renderReactToHtml(req, res) {
-  appState = getAppState(req);
-  markup = React.renderToString(TodoApp(appState));
+  var appState = getAppState(req);
+  var markup = React.renderToString(TodoApp(appState));
   res.send(template.replace(anchor, markup));
 }
 
