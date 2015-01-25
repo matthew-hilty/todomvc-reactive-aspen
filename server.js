@@ -15,7 +15,7 @@ var template = fs.readFileSync('./index.html', utf8);
 
 function getAppState(req) {
   var cookie = req.cookies.aspenTodoAppState;
-  return isObject(cookie) ? defaultState : JSON.parse(cookie);
+  return cookie ? JSON.parse(cookie) : defaultState;
 }
 
 function onStart() {
