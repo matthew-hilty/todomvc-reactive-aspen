@@ -4,8 +4,8 @@
   "description": "TodoMVC structured with the Reactive-Aspen framework",
   "main": "lib/initializer.js",
   "scripts": {
-    "build-output": "browserify -t coughify --extension='.cough' -o public/output.js src/initializer.cough",
     "build": "npm run build-output && npm run compile",
+    "build-output": "browserify -t coughify --extension='.cough' src/initializer.cough | bundle-collapser - | uglifyjs -cm -o public/output.js",
     "compile": "cough --no-header -o lib/ -bc src/",
     "start": "node server.js"
   },
@@ -25,7 +25,9 @@
   },
   "devDependencies": {
     "cough-syrup": "0.0.1",
-    "browserify": "~8.1.1",
-    "coughify": "0.0.0"
+    "coughify": "0.0.0",
+    "uglify-js": "~2.4.16",
+    "bundle-collapser": "~1.1.1",
+    "browserify": "~8.1.1"
   }
 }
