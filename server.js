@@ -4,7 +4,7 @@ var express      = require('express');
 var fs           = require('fs');
 var isObject     = require('./lib/utilities').isObject;
 var path         = require('path');
-var React        = require('react/addons');
+var React        = require('./lib/vendor/React');
 var TodoApp      = require('./lib/view/app');
 
 var anchor   = '$TODOAPP$';
