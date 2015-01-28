@@ -1,6 +1,7 @@
 {
   "name": "todomvc-reactive-aspen",
   "version": "0.0.0",
+  "private": true,
   "description": "TodoMVC structured with the Reactive-Aspen framework",
   "engines": {
     "node": "~0.10.24",
