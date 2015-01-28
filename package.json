@@ -2,7 +2,15 @@
   "name": "todomvc-reactive-aspen",
   "version": "0.0.0",
   "description": "TodoMVC structured with the Reactive-Aspen framework",
+  "engines": {
+    "node": "~0.10.24",
+    "npm": "~1.3.23"
+  },
   "main": "lib/initializer.js",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/matthew-hilty/todomvc-reactive-aspen.git"
+  },
   "scripts": {
     "build": "npm run build-output && npm run compile",
     "build-output": "browserify -t coughify --extension='.cough' src/initializer.cough | bundle-collapser - | uglifyjs -cm -o public/output.js",
