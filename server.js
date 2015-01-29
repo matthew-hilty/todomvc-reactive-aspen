@@ -21,7 +21,7 @@ function getAppState(req) {
 }
 
 function onStart() {
-  console.log('Server running on port ' + port);
+  console.log('Server running on port ' + port + '.');
   preventHerokuSleep();
   console.log('Pinging app to prevent spin-down.');
 }
