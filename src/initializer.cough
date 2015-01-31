@@ -1,9 +1,10 @@
-defaultState   = require './default-state'
-{ initialize } = require './vendor/Aspen'
-NAMESPACE      = require './namespace'
-topViewFactory = require './view/app'
-{ store }      = require './utilities'
-viewImports    = require './view-imports'
+defaultState                = require './default-state'
+getRouter                   = require '../vendor/router'
+{ initialize, relayEvents } = require './vendor/Aspen'
+NAMESPACE                   = require './namespace'
+{ store }                   = require './utilities'
+topViewFactory              = require './view/app'
+viewImports                 = require './view-imports'
 
 isEmpty = \array ->
   array.length == 0
@@ -14,5 +15,7 @@ initialState = if isEmpty cachedState then defaultState else cachedState
 
 initialize (appNodeId, topViewFactory, initialState, viewImports)
 
+Router = getRouter relayEvents
+Router { onHashChange: true }
+
 require './controller/event-controllers'
-require './controller/router'
