@@ -5,6 +5,7 @@
 {
   cacheAppData
   editAppState
+  editMode
   endEditing
   extractNewTodo
   filteringEnter
@@ -41,16 +42,25 @@ transforms = [
   compose [filteringEscape, mapping (endEditing restoreOrigTitle)]
 ]
 
+penultimateNodes = [
+  '$todo-label-doubleclicks'
+  '$hash-events'
+  'cookieManager'
+]
+
+penultimateTransforms = [
+  mapping editAppState
+  mapping editMode
+  composing storeCookie
+]
+
 connect (nodes, 'cacher', -> transforms)
 
 connect 'cacher', 'cookieManager', ->
   composing cacheAppData
 
-plugIntoTerminus 'cookieManager', ->
-  composing storeCookie
-
-plugIntoTerminus '$todo-label-doubleclicks', ->
-  mapping editAppState
+plugIntoTerminus penultimateNodes, ->
+  penultimateTransforms
 
 onValue 'todo-in-edit', \capsule ->
   storeTitle (capsule.event.target.value)
