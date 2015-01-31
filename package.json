@@ -15,8 +15,8 @@
   "scripts": {
     "build": "npm run bundle && npm run compile",
     "bundle": "browserify -t coughify --extension='.cough' src/initializer.cough | bundle-collapser - | uglifyjs -cm -o public/todoapp.js",
-    "devbundle": "browserify -t coughify --extension='.cough' src/initializer.cough -o public/todoapp.js",
     "compile": "cough --no-header -o lib/ -bc src/",
+    "devbundle": "browserify -t coughify --extension='.cough' src/initializer.cough -o public/todoapp.js",
     "start": "node server.js"
   },
   "keywords": [
