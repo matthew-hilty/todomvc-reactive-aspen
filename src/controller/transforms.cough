@@ -1,9 +1,12 @@
-{ add, recaption, remove, removeCompleted, toggle, toggleAll } = require '../model/todoList'
-{ appStateProperty }                                           = require '../vendor/Aspen'
-{ store, uuid }                                                = require '../utilities'
-{ filtering }                                                  = require('../vendor/Pando').transforms
-NAMESPACE                                                      = require '../namespace'
-{ reset, resetEditing, resetTodos }                            = require '../model/appState'
+{ add, recaption, remove,
+  removeCompleted, toggle, toggleAll } = require '../model/todoList'
+
+{ reset, resetEditing, resetMode, resetTodos } = require '../model/appState'
+
+{ appStateProperty } = require '../vendor/Aspen'
+{ store, uuid }      = require '../utilities'
+{ filtering }        = require('../vendor/Pando').transforms
+NAMESPACE            = require '../namespace'
 
 cacheAppData = \appState ->
   store (NAMESPACE, appState)
@@ -14,6 +17,10 @@ editAppState = \capsule \appState ->
   storeOrigTitle todo.title
   resetEditing (appState, capsule.id)
 
+editMode = \capsule \appState ->
+  mode = extractMode capsule
+  resetMode (appState, mode)
+
 _endEditing = (text, id) -> (appState) ->
   manage = if text then recaption else remove
   newTodos = manage (appState.todos, id, text)
@@ -23,6 +30,10 @@ endEditing = \getText \capsule ->
   text = getText ()
   setEventTgtValue (capsule, text)
   _endEditing (text, capsule.id)
+
+extractMode = \capsule ->
+  hash = capsule.event
+  if hash.length == 2 then 'all' else hash.slice 2
 
 _extractNewTodo = \title \appState ->
   return appState unless title
@@ -81,6 +92,7 @@ filteringEscape = filteringKey 27
 module.exports = {
   cacheAppData
   editAppState
+  editMode
   endEditing
   extractNewTodo
   filteringEnter
