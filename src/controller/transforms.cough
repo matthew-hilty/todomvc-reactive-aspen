@@ -33,7 +33,10 @@ endEditing = \getText \capsule ->
 
 extractMode = \capsule ->
   hash = capsule.event
-  if hash.length == 2 then 'all' else hash.slice 2
+  switch hash.slice 2
+    when 'active'    then 'active'
+    when 'completed' then 'completed'
+    else 'all'
 
 _extractNewTodo = \title \appState ->
   return appState unless title
