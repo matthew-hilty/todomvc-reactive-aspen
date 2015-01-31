@@ -33,9 +33,9 @@ countSpan = \count ->
 getFilterClassName = (currentMode, filterMode) ->
   classSet { selected: currentMode == filterMode }
 
-getFilterOption = ([busLabel, href, linkLabel, mode]) -> (currentMode) ->
+getFilterOption = ([viewLabel, href, linkLabel, mode]) -> (currentMode) ->
   linkProps = { href, className: getFilterClassName (mode, currentMode) }
-  li (noProps, $link busLabel (linkProps, linkLabel))
+  li (noProps, $link viewLabel (linkProps, linkLabel))
 
 fields = [
   ['ActiveTodos',    '#/active',    'Active ',   'active'   ]
