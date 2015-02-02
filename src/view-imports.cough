@@ -1,5 +1,6 @@
-blur          = { blur: true }
-todoItemInput = 'TodoItemInput'
+blur           = { blur: true }
+blurAndPrevent = { blur: true, preventDefault: true }
+todoItemInput  = 'TodoItemInput'
 
 module.exports = [
   ['$new-todo-keydowns',       'NewTodoInput' ]
@@ -7,13 +8,14 @@ module.exports = [
   ['$clear-clicks',            'ClearButton'  ]
   ['$delete-clicks',           'DeleteButton' ]
 
-  ['$active-todos',      'ActiveTodos',    blur]
-  ['$all-todos',         'AllTodos',       blur]
-  ['$completed-todos',   'CompletedTodos', blur]
   ['$toggle-all-clicks', 'ToggleAll',      blur]
   ['$toggle-clicks',     'Toggle',         blur]
 
-  ['$hash-events',   'hash',        { handler: 'onHashChange'}]
+  ['$active-todos',      'ActiveTodos',    blurAndPrevent]
+  ['$all-todos',         'AllTodos',       blurAndPrevent]
+  ['$completed-todos',   'CompletedTodos', blurAndPrevent]
+
+  ['$hash-events',   'Hash',        { handler: 'onHashChange'}]
   ['$edit-blurs',    todoItemInput, { handler: 'onBlur'      }]
   ['$edit-keydowns', todoItemInput, { handler: 'onKeyDown'   }]
   ['todo-in-edit',   todoItemInput, { handler: 'onChange'    }]
