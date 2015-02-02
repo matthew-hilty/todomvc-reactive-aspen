@@ -12,6 +12,9 @@ cacheAppData = \appState ->
   store (NAMESPACE, appState)
   appState
 
+changeModeTo = \mode -> () -> \appState ->
+  resetMode (appState, mode)
+
 editAppState = \capsule \appState ->
   todo = findTodo (appState.todos, capsule.id)
   storeOrigTitle todo.title
@@ -94,6 +97,7 @@ filteringEscape = filteringKey 27
 
 module.exports = {
   cacheAppData
+  changeModeTo
   editAppState
   editMode
   endEditing

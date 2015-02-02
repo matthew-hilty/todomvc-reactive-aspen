@@ -4,6 +4,7 @@
 
 {
   cacheAppData
+  changeModeTo
   editAppState
   editMode
   endEditing
@@ -46,12 +47,18 @@ penultimateNodes = [
   '$todo-label-doubleclicks'
   '$hash-events'
   'cookieManager'
+  '$active-todos'
+  '$all-todos'
+  '$completed-todos'
 ]
 
 penultimateTransforms = [
-  mapping editAppState
-  mapping editMode
+  mapping   editAppState
+  mapping   editMode
   composing storeCookie
+  mapping   (changeModeTo 'active')
+  mapping   (changeModeTo 'all')
+  mapping   (changeModeTo 'completed')
 ]
 
 connect (nodes, 'cacher', -> transforms)
