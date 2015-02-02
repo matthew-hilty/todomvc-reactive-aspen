@@ -1,5 +1,4 @@
 defaultState                = require './default-state'
-getRouter                   = require '../vendor/router'
 { initialize, relayEvents } = require './vendor/Aspen'
 NAMESPACE                   = require './namespace'
 { store }                   = require './utilities'
@@ -10,12 +9,8 @@ isEmpty = \array ->
   array.length == 0
 
 appNodeId    = 'todoapp'
-cachedState  = store NAMESPACE
-initialState = if isEmpty cachedState then defaultState else cachedState
+initialState = JSON.parse(document.getElementById(appNodeId).dataset.appstate)
 
 initialize (appNodeId, topViewFactory, initialState, viewImports)
-
-Router = getRouter relayEvents
-Router { onHashChange: true }
 
 require './controller/event-controllers'
