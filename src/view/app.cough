@@ -1,13 +1,21 @@
-AppBody   = require './body'
-AppFooter = require './footer'
-AppHeader = require './header'
-{ div }   = require '../vendor/DOM'
+AppBody         = require './body'
+AppFooter       = require './footer'
+AppHeader       = require './header'
+{ div }         = require '../vendor/DOM'
+{ relayEvents } = require '../vendor/Aspen'
+getRouteElement = require '../../vendor/route'
 
 countCompleted = \todos ->
   todos.reduce (countReducer, 0)
 
 countReducer = (count, todo) ->
   if todo.completed then count + 1 else count
+
+getRoute = \mode ->
+  switch mode
+    when 'active'    then '/active'
+    when 'completed' then '/completed'
+    else                  '/'
 
 headerHasFocus = \editing ->
   editing == null
@@ -18,11 +26,17 @@ TodoApp = \appState ->
   fullCount      = todos.length
   allCompleted   = completedCount == fullCount
 
+  Route
+    hash         : getRoute mode
+    onHashChange : true
+
   div (
     null
     AppHeader (headerHasFocus editing)
     AppBody (appState, allCompleted)
     AppFooter (mode, fullCount, completedCount)
   )
+
+Route = getRouteElement relayEvents
 
 module.exports = TodoApp
