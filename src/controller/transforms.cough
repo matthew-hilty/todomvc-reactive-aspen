@@ -35,8 +35,8 @@ endEditing = \getText \capsule ->
   _endEditing (text, capsule.id)
 
 extractMode = \capsule ->
-  hash = capsule.event
-  switch hash.slice 2
+  route = capsule.event
+  switch route.slice 1
     when 'active'    then 'active'
     when 'completed' then 'completed'
     else 'all'
