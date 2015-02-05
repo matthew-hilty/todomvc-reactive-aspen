@@ -3,7 +3,7 @@ AppFooter       = require './footer'
 AppHeader       = require './header'
 { div }         = require '../vendor/DOM'
 { relayEvents } = require '../vendor/Aspen'
-getRouteElement = require '../../vendor/route'
+getRouteElement = require 'reactive-aspen-route'
 
 countCompleted = \todos ->
   todos.reduce (countReducer, 0)

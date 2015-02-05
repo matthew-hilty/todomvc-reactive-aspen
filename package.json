@@ -16,6 +16,7 @@
     "build": "npm run bundle && npm run compile",
     "bundle": "browserify -t coughify --extension='.cough' src/initializer.cough | bundle-collapser - | uglifyjs -cm -o public/todoapp.js",
     "compile": "cough --no-header -o lib/ -bc src/",
+    "devbuild": "npm run compile & npm run devbundle",
     "devbundle": "browserify -t coughify --extension='.cough' src/initializer.cough -o public/todoapp.js",
     "start": "node server.js"
   },
@@ -26,12 +27,13 @@
   "author": "Matthew Hilty",
   "license": "MIT",
   "dependencies": {
-    "express": "~4.11.1",
     "cookie-parser": "~1.3.3",
+    "express": "~4.11.1",
     "pando": "0.0.4",
-    "reactive-aspen": "~0.0.3",
+    "react": "~0.12.2",
     "react-bridge": "0.0.2",
-    "react": "~0.12.2"
+    "reactive-aspen": "~0.0.3",
+    "reactive-aspen-route": "0.0.0"
   },
   "devDependencies": {
     "cough-syrup": "0.0.1",
