@@ -5,7 +5,8 @@ var cookieParser   = require('cookie-parser')();
 var createAppState = require('./lib/model/appState').create;
 var express        = require('express');
 var fs             = require('fs');
-var appUrl         = require('./lib/app-config').url;
+var host           = require('./lib/app-config').host;
+var port           = require('./lib/app-config').port;
 var http           = require('http');
 var mongodb        = require('mongodb');
 var path           = require('path');
@@ -17,7 +18,6 @@ var uuid           = require('./lib/utilities').uuid;
 var app              = express();
 var appPlaceholder   = '$TODOAPP$';
 var dbUrl            = 'mongodb://localhost:27017/todoLists';
-var port             = process.env.PORT || 4000;
 var sevenDays        = 7 * 24 * 60 * 60 * 1000;
 var statePlaceholder = '$APPSTATE$';
 var utf8             = { encoding: 'utf8' };
@@ -33,6 +33,12 @@ function closeDB() {
 function closeDbThenExitProcess() {
   closeDB();
   process.exit();
+}
+
+function getAppState(mode, req, res) {
+  return getTodos(req, res).then(function (todos) {
+    return createAppState({ mode: mode, todos: todos });
+  });
 }
 
 function getDbTodos(userID) {
@@ -56,19 +62,17 @@ function getTodos(req, res) {
   return todos;
 }
 
-function getAppState(mode, req, res) {
-  return getTodos(req, res).then(function (todos) {
-    return createAppState({ mode: mode, todos: todos });
-  });
-}
-
 function onStart() {
   console.log('Server running on port ' + port + '.');
   preventHerokuSleep();
 }
 
 function pingHeroku() {
-  http.get(appUrl);
+  http.get({
+    host    : host,
+    port    : port,
+    headers : { Cookie: 'aspenID=spindown-prevention' }
+  });
 }
 
 function preventHerokuSleep() {
