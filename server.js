@@ -5,6 +5,7 @@ var cookieParser   = require('cookie-parser')();
 var createAppState = require('./lib/model/appState').create;
 var express        = require('express');
 var fs             = require('fs');
+var appUrl         = require('./lib/app-config').url;
 var http           = require('http');
 var mongodb        = require('mongodb');
 var path           = require('path');
@@ -16,7 +17,6 @@ var uuid           = require('./lib/utilities').uuid;
 var app              = express();
 var appPlaceholder   = '$TODOAPP$';
 var dbUrl            = 'mongodb://localhost:27017/todoLists';
-var herokuApp        = 'http://todomvc-reactive-aspen.herokuapp.com';
 var port             = process.env.PORT || 4000;
 var sevenDays        = 7 * 24 * 60 * 60 * 1000;
 var statePlaceholder = '$APPSTATE$';
@@ -68,7 +68,7 @@ function onStart() {
 }
 
 function pingHeroku() {
-  http.get(herokuApp);
+  http.get(appUrl);
 }
 
 function preventHerokuSleep() {
