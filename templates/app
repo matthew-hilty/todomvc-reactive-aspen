@@ -6,7 +6,7 @@
 		<link rel="stylesheet" href="base.css">
 	</head>
 	<body>
-		<section id="todoapp" data-appstate=$APPSTATE$>$TODOAPP$</section>
+		<section id="todoapp" data-appstate='$APPSTATE$'>$TODOAPP$</section>
     <footer id="info">
 			<p>Double-click to edit a todo</p>
       <p>Created by <a
