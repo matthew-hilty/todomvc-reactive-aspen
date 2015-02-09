@@ -110,7 +110,7 @@ toggleTodo = \capsule \appState ->
 
 filteringEnter  = filteringKey 13
 filteringEscape = filteringKey 27
-patchRoute      = "https://#{host}:#{port}/users/#{getUserID ()}/todos"
+patchRoute      = "http://#{host}:#{port}/users/#{getUserID ()}/todos"
 
 module.exports = {
   changeModeTo
