@@ -4,11 +4,23 @@ compose = \fns ->
 composeReducer = (composedFn, fn) -> (args...) ->
   fn (composedFn args...)
 
+escapeSeparators = \str ->
+  separators = /[\-\.\+\*]/g
+  # Double backslash is needed to convert strings to regex escape sequences.
+  str.replace (separators, '\\$&')
+
 extend = (base, objects...) ->
   for obj in objects
     for own key of obj
       base[key] = obj[key]
   return base
+
+getCookie = \key ->
+  return null unless key 
+  encodedKey   = escapeSeparators (encodeURIComponent key)
+  cookieRegex  = /// (?:^|.*;) \s* #{encodedKey} \s* = \s* ([^;]*) ///
+  encodedValue = (document.cookie.match cookieRegex)[1]
+  (decodeURIComponent encodedValue) || null
 
 identity = \val ->
   val
@@ -18,6 +30,17 @@ isArray = \val ->
 
 isObject = \val ->
   Object.prototype.toString.call val == '[object Object]'
+
+patch = \opts ->
+  { data, load, path } = opts
+  xhr = new XMLHttpRequest ()
+  xhr.addEventListener ('load', load)
+  xhr.open ('PATCH', path)
+  xhr.setRequestHeader (
+    'Content-Type', 'application/x-www-form-urlencoded; charset=UTF-8')
+  xhr.setRequestHeader ('X-Requested-With', 'XMLHttpRequest')
+  xhr.send data
+  return false
 
 pluralize = (count, word) ->
   if count == 1 then word else word + 's'
@@ -55,15 +78,23 @@ _uuid = (i, j) ->
 
 uuid = ->
   id = ''
-
   for i in [0...32]
     random = Math.random () * 16 | 0
     id += '-' if i in signposts
     id += _uuid (i, random)
-
-  id
+  return id
 
 signposts     = [8, 12, 16, 20]
 { stringify } = JSON
 
-module.exports = { compose, extend, isObject, pluralize, set, store, uuid }
+module.exports = {
+  compose
+  extend
+  getCookie
+  isObject
+  patch
+  pluralize
+  set
+  store
+  uuid
+}
