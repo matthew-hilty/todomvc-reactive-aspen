@@ -1,0 +1,7 @@
+url =
+  if process.env.NODE_ENV == 'production'
+    'http://todomvc-reactive-aspen.herokuapp.com'
+  else
+    'http://localhost:4000'
+
+module.exports = { url }
