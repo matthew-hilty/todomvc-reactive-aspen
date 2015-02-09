@@ -2,15 +2,16 @@
 
 create = \props ->
   { editing, mode, todos } = props
-  reset (defaultAppState, { editing, mode, todos })
+  editing ?= null
+  mode    ?= 'all'
+  todos   ?= []
+  { editing, mode, todos }
 
 reset = (appState, newProps) ->
   extend ({}, appState, newProps)
 
 resetProp = (propName) -> (appState, newProp) ->
   set (propName, newProp, appState)
-
-defaultAppState = { editing: null, mode: 'all', todos: [] }
 
 [resetEditing, resetMode, resetTodos] =
   ['editing', 'mode', 'todos'].map resetProp
