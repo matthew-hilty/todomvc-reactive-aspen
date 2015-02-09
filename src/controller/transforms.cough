@@ -1,16 +1,21 @@
-{ add, recaption, remove,
-  removeCompleted, toggle, toggleAll } = require '../model/todoList'
+{ appStateProperty }           = require '../vendor/Aspen'
+{ getCookie, httpPatch, uuid } = require '../utilities'
+{ filtering }                  = require('../vendor/Pando').transforms
+{ url }                        = require '../app-config'
 
-{ reset, resetEditing, resetMode, resetTodos } = require '../model/appState'
+{ add
+  recaption
+  remove
+  removeCompleted
+  toggle
+  toggleAll
+} = require '../model/todoList'
 
-{ appStateProperty } = require '../vendor/Aspen'
-{ store, uuid }      = require '../utilities'
-{ filtering }        = require('../vendor/Pando').transforms
-NAMESPACE            = require '../namespace'
-
-cacheAppData = \appState ->
-  store (NAMESPACE, appState)
-  appState
+{ reset
+  resetEditing
+  resetMode
+  resetTodos
+} = require '../model/appState'
 
 changeModeTo = \mode -> () -> \appState ->
   resetMode (appState, mode)
@@ -23,6 +28,8 @@ editAppState = \capsule \appState ->
 editMode = \capsule \appState ->
   mode = extractMode capsule
   resetMode (appState, mode)
+
+encode = ; encodeURIComponent JSON.stringify ;
 
 _endEditing = (text, id) -> (appState) ->
   manage = if text then recaption else remove
@@ -57,6 +64,16 @@ findTodo = (todos, id) ->
   for todo, index in todos
     return todo if todo.id == id
 
+getPatchConfig = \appState ->
+  data : getUrlEncodedTodos appState
+  path : patchRoute
+
+getUrlEncodedTodos = \appState ->
+  "todos=#{encode(appState.todos)}"
+
+getUserID = ->
+  getCookie 'aspenID'
+
 removeCompletedTodos = \capsule \appState ->
   resetTodos (appState, removeCompleted appState.todos)
 
@@ -81,9 +98,8 @@ removeTodo = \capsule \appState ->
 setEventTgtValue = (capsule, text) ->
   capsule.event.target.value = text
 
-storeCookie = \appState ->
-  value = encodeURIComponent(JSON.stringify(appState))
-  document.cookie = "aspenTodoAppState=#{value}"
+synchronizeDb = \appState ->
+  httpPatch (getPatchConfig appState)
   appState
 
 toggleAllTodos = \capsule \appState ->
@@ -94,9 +110,9 @@ toggleTodo = \capsule \appState ->
 
 filteringEnter  = filteringKey 13
 filteringEscape = filteringKey 27
+patchRoute      = url + "/users/#{getUserID ()}/todos"
 
 module.exports = {
-  cacheAppData
   changeModeTo
   editAppState
   editMode
@@ -106,10 +122,10 @@ module.exports = {
   filteringEscape
   removeCompletedTodos
   removeTodo
+  restoreOrigTitle
   toggleAllTodos
   toggleTodo
-  restoreOrigTitle
   saveCurrentTitle 
-  storeCookie
   storeTitle
+  synchronizeDb
 }
