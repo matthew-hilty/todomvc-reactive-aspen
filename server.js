@@ -1,26 +1,65 @@
 'use strict';
 
-var cookieParser = require('cookie-parser');
-var express      = require('express');
-var fs           = require('fs');
-var http         = require('http');
-var path         = require('path');
-var React        = require('./lib/vendor/React');
-var TodoApp      = require('./lib/view/app');
+var bodyParser     = require('body-parser');
+var cookieParser   = require('cookie-parser')();
+var createAppState = require('./lib/model/appState').create;
+var express        = require('express');
+var fs             = require('fs');
+var http           = require('http');
+var mongodb        = require('mongodb');
+var path           = require('path');
+var Promise        = require('bluebird');
+var React          = require('./lib/vendor/React');
+var TodoApp        = require('./lib/view/app');
+var uuid           = require('./lib/utilities').uuid;
 
-var app          = express();
-var appAnchor    = '$TODOAPP$';
-var defaultState = '{"editing":null,"mode":"all","todos":[]}';
-var herokuApp    = 'http://todomvc-reactive-aspen.herokuapp.com';
-var port         = process.env.PORT || 4000;
-var stateAnchor  = '$APPSTATE$';
-var utf8         = { encoding: 'utf8' };
-var template     = fs.readFileSync('./templates/app', utf8);
+var app              = express();
+var appPlaceholder   = '$TODOAPP$';
+var dbUrl            = 'mongodb://localhost:27017/todoLists';
+var herokuApp        = 'http://todomvc-reactive-aspen.herokuapp.com';
+var port             = process.env.PORT || 4000;
+var sevenDays        = 7 * 24 * 60 * 60 * 1000;
+var statePlaceholder = '$APPSTATE$';
+var utf8             = { encoding: 'utf8' };
+var template         = fs.readFileSync('./templates/app', utf8);
+var urlencodedParser = bodyParser.urlencoded({ extended: false });
 
-function getAppStateStr(mode, req) {
-  var cookie = req.cookies.aspenTodoAppState;
-  var state  = cookie ? cookie : defaultState;
-  return resetMode(mode, state);
+function closeDB() {
+  dbPromise.then(function (db) {
+    db.close();
+  });
+}
+
+function closeDbThenExitProcess() {
+  closeDB();
+  process.exit();
+}
+
+function getDbTodos(userID) {
+  return todoLists.findOneAsync({ userid: userID })
+  .then(function (record) {
+    return record ? record.todos : getDefaultTodos(userID);
+  });
+}
+
+function getDefaultTodos(userID) {
+  var defaultTodos = [];
+  todoLists.insertAsync({ userid: userID, todos: defaultTodos });
+  return defaultTodos;
+}
+
+function getTodos(req, res) {
+  var cookieID = req.cookies.aspenID;
+  var userID = cookieID ? cookieID : uuid();
+  var todos = cookieID ? getDbTodos(userID) : promisifyDefaultTodos(userID);
+  storeIdInCookie(res, userID);
+  return todos;
+}
+
+function getAppState(mode, req, res) {
+  return getTodos(req, res).then(function (todos) {
+    return createAppState({ mode: mode, todos: todos });
+  });
 }
 
 function onStart() {
@@ -38,28 +77,54 @@ function preventHerokuSleep() {
   console.log('Pinging app to prevent spin-down.');
 }
 
+function promisifyDefaultTodos(userID) {
+  return new Promise(function (resolve, reject) {
+    resolve(getDefaultTodos(userID));
+  });
+}
+
 function renderReactToHtml(mode) {
   return function (req, res) {
-    var appStateStr = getAppStateStr(mode, req);
-    var appState    = JSON.parse(appStateStr);
-    var appMarkup   = React.renderToString(TodoApp(appState));
-
-    var html = template.replace(appAnchor,   appMarkup)
-                         .replace(stateAnchor, appStateStr);
-    res.send(html);
+    getAppState(mode, req, res).then(function (appState) {
+      var appStateStr = JSON.stringify(appState);
+      var appMarkup = React.renderToString(TodoApp(appState));
+      var html = template.replace(appPlaceholder, appMarkup)
+        .replace(statePlaceholder, appStateStr);
+      res.send(html);
+    });
   };
 }
 
-function resetMode(mode, state) {
-  return state.replace(/"mode":".*?"/, ('"mode":"' + mode + '"'));
+function storeIdInCookie(res, userID) {
+  res.cookie('aspenID', userID, { maxAge: sevenDays });
 }
+
+function updateTodoList(req, res, next) {
+  todoLists.updateAsync(
+    { userid: req.params.user_id },
+    { $set: { todos: JSON.parse(req.body.todos) }}
+  );
+}
+
+var Collection  = mongodb.Collection;
+var MongoClient = mongodb.MongoClient;
+
+Promise.promisifyAll(Collection.prototype);
+Promise.promisifyAll(MongoClient);
+
+var dbPromise = MongoClient.connectAsync(dbUrl);
+var todoLists = null;
+
+dbPromise.then(function (db) {
+  todoLists = db.collection('todoLists');
+})
 
 app.use(express.static(path.join(__dirname, 'public')));
 
-app.use(cookieParser());
+app.get('*', cookieParser, renderReactToHtml('all'));
+app.patch('/users/:user_id/todos', urlencodedParser, updateTodoList);
 
-app.get('/active',       renderReactToHtml('active'));
-app.get('/completed',    renderReactToHtml('completed'));
-app.get('*',             renderReactToHtml('all'));
+process.on('SIGINT',  closeDbThenExitProcess);
+process.on('SIGTERM', closeDbThenExitProcess);
 
 app.listen(port, onStart);
