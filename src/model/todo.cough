@@ -7,7 +7,7 @@ completed = \todo ->
   todo.completed
 
 create = \title ->
-  { completed: false, id: uuid (), title: title }
+  { completed: false, id: uuid (), title }
 
 modifyCompletedStatus = \fn \todo ->
   set ('completed', (fn todo), todo)
