@@ -3,7 +3,6 @@
 { composing, mapping }                 = require('../vendor/Pando').transforms
 
 {
-  cacheAppData
   changeModeTo
   editAppState
   editMode
@@ -11,13 +10,13 @@
   extractNewTodo
   filteringEnter
   filteringEscape
+  synchronizeDb
   removeCompletedTodos
   removeTodo
+  restoreOrigTitle
   toggleAllTodos
   toggleTodo
-  restoreOrigTitle
   saveCurrentTitle 
-  storeCookie
   storeTitle
 } = require './transforms'
 
@@ -46,7 +45,7 @@ transforms = [
 penultimateNodes = [
   '$todo-label-doubleclicks'
   '$hash-events'
-  'cookieManager'
+  'dbSynchronizer'
   '$active-todos'
   '$all-todos'
   '$completed-todos'
@@ -55,16 +54,14 @@ penultimateNodes = [
 penultimateTransforms = [
   mapping   editAppState
   mapping   editMode
-  composing storeCookie
+  composing synchronizeDb
   mapping   (changeModeTo 'active')
   mapping   (changeModeTo 'all')
   mapping   (changeModeTo 'completed')
 ]
 
-connect (nodes, 'cacher', -> transforms)
-
-connect 'cacher', 'cookieManager', ->
-  composing cacheAppData
+connect nodes, 'dbSynchronizer', ->
+  transforms
 
 plugIntoTerminus penultimateNodes, ->
   penultimateTransforms
