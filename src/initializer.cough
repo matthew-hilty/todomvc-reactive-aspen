@@ -1,7 +1,4 @@
-defaultState                = require './default-state'
 { initialize, relayEvents } = require './vendor/Aspen'
-NAMESPACE                   = require './namespace'
-{ store }                   = require './utilities'
 topViewFactory              = require './view/app'
 viewImports                 = require './view-imports'
 
