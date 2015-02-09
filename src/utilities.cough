@@ -61,14 +61,6 @@ shallowCopy = \val ->
     else
       val
 
-store = (namespace, data) ->
-  if data
-    localStorage.setItem (namespace, stringify data)
-    return data
-
-  data = localStorage.getItem namespace
-  if data then JSON.parse data else []
-
 _uuid = (i, j) ->
   nbr = switch i
     when 12 then 4
@@ -95,6 +87,5 @@ module.exports = {
   patch
   pluralize
   set
-  store
   uuid
 }
