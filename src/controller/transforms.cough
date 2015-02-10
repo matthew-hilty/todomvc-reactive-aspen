@@ -1,7 +1,6 @@
 { appStateProperty }           = require '../vendor/Aspen'
 { getCookie, httpPatch, uuid } = require '../utilities'
 { filtering }                  = require('../vendor/Pando').transforms
-{ host, port }                 = require '../app-config'
 
 { add
   recaption
@@ -110,7 +109,8 @@ toggleTodo = \capsule \appState ->
 
 filteringEnter  = filteringKey 13
 filteringEscape = filteringKey 27
-patchRoute      = "http://#{host}:#{port}/users/#{getUserID ()}/todos"
+host            = window.location.host
+patchRoute      = "http://#{host}/users/#{getUserID ()}/todos"
 
 module.exports = {
   changeModeTo
