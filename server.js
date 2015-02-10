@@ -3,14 +3,11 @@
 var bodyParser     = require('body-parser');
 var cookieParser   = require('cookie-parser')();
 var createAppState = require('./lib/model/appState').create;
-var dbUri          = require('./lib/app-config').dbUri;
 var express        = require('express');
 var fs             = require('fs');
-var host           = require('./lib/app-config').host;
 var http           = require('http');
 var mongodb        = require('mongodb');
 var path           = require('path');
-var port           = require('./lib/app-config').port;
 var Promise        = require('bluebird');
 var React          = require('./lib/vendor/React');
 var TodoApp        = require('./lib/view/app');
@@ -18,11 +15,25 @@ var uuid           = require('./lib/utilities').uuid;
 
 var app              = express();
 var appPlaceholder   = '$TODOAPP$';
+var cookie           = { Cookie: 'aspenID=spindown-prevention' };
+var herokuHost       = 'todomvc-reactive-aspen.herokuapp.com';
+var isProduction     = !!(process.env.NODE_ENV === 'production');
+var localDbUri       = 'mongodb://localhost:27017/todoLists';
+var port             = process.env.PORT || 4000;
 var sevenDays        = 7 * 24 * 60 * 60 * 1000;
 var statePlaceholder = '$APPSTATE$';
-var utf8             = { encoding: 'utf8' };
-var template         = fs.readFileSync('./templates/app', utf8);
 var urlencodedParser = bodyParser.urlencoded({ extended: false });
+var utf8             = { encoding: 'utf8' };
+
+var dbUri    = isProduction ? process.env.MONGOLAB_URI : localDbUri;
+var host     = isProduction ? herokuHost : 'localhost';
+var template = fs.readFileSync('./templates/app', utf8);
+
+var httpConfig = { headers: cookie, host: host } 
+
+if (!isProduction) {
+  httpConfig.port = port;
+}
 
 function closeDB() {
   dbPromise.then(function (db) {
@@ -68,11 +79,7 @@ function onStart() {
 }
 
 function pingHeroku() {
-  http.get({
-    host    : host,
-    port    : port,
-    headers : { Cookie: 'aspenID=spindown-prevention' }
-  });
+  http.get(httpConfig);
 }
 
 function preventHerokuSleep() {
@@ -108,6 +115,7 @@ function updateTodoList(req, res, next) {
     { userid: req.params.user_id },
     { $set: { todos: JSON.parse(req.body.todos) }}
   );
+  res.end();
 }
 
 var Collection  = mongodb.Collection;
