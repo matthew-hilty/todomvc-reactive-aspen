@@ -1,7 +1,9 @@
 module.exports =
   if process.env.NODE_ENV == 'production'
-    host : 'todomvc-reactive-aspen.herokuapp.com'
-    port : process.env.PORT
+    dbUri : process.env.MONGOLAB_URI
+    host  : 'todomvc-reactive-aspen.herokuapp.com'
+    port  : process.env.PORT
   else
-    host : 'localhost'
-    port : 4000
+    dbUri : 'mongodb://localhost:27017/todoLists'
+    host  : 'localhost'
+    port  : 4000
