@@ -14,10 +14,10 @@
   },
   "scripts": {
     "build": "npm run bundle && npm run compile",
-    "bundle": "browserify -t coughify --extension='.cough' src/initializer.cough | bundle-collapser - | uglifyjs -cm -o public/todoapp.js",
+    "bundle": "browserify -t coughify -t strictify --extension='.cough' src/initializer.cough | bundle-collapser - | uglifyjs -cm -o public/todoapp.js",
     "compile": "cough --no-header -o lib/ -bc src/",
     "devbuild": "npm run compile & npm run devbundle",
-    "devbundle": "browserify -t coughify --extension='.cough' src/initializer.cough -o public/todoapp.js",
+    "devbundle": "browserify -t coughify -t strictify --extension='.cough' src/initializer.cough -o public/todoapp.js",
     "start": "node server.js"
   },
   "keywords": [
@@ -39,10 +39,11 @@
     "reactive-aspen-route": "0.0.0"
   },
   "devDependencies": {
+    "browserify": "~8.1.1",
+    "bundle-collapser": "~1.1.1",
     "cough-syrup": "0.0.1",
     "coughify": "0.0.0",
-    "uglify-js": "~2.4.16",
-    "bundle-collapser": "~1.1.1",
-    "browserify": "~8.1.1"
+    "strictify": "^0.2.0",
+    "uglify-js": "~2.4.16"
   }
 }
