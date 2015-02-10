@@ -3,13 +3,14 @@
 var bodyParser     = require('body-parser');
 var cookieParser   = require('cookie-parser')();
 var createAppState = require('./lib/model/appState').create;
+var dbUri          = require('./lib/app-config').dbUri;
 var express        = require('express');
 var fs             = require('fs');
 var host           = require('./lib/app-config').host;
-var port           = require('./lib/app-config').port;
 var http           = require('http');
 var mongodb        = require('mongodb');
 var path           = require('path');
+var port           = require('./lib/app-config').port;
 var Promise        = require('bluebird');
 var React          = require('./lib/vendor/React');
 var TodoApp        = require('./lib/view/app');
@@ -17,7 +18,6 @@ var uuid           = require('./lib/utilities').uuid;
 
 var app              = express();
 var appPlaceholder   = '$TODOAPP$';
-var dbUrl            = 'mongodb://localhost:27017/todoLists';
 var sevenDays        = 7 * 24 * 60 * 60 * 1000;
 var statePlaceholder = '$APPSTATE$';
 var utf8             = { encoding: 'utf8' };
@@ -116,7 +116,7 @@ var MongoClient = mongodb.MongoClient;
 Promise.promisifyAll(Collection.prototype);
 Promise.promisifyAll(MongoClient);
 
-var dbPromise = MongoClient.connectAsync(dbUrl);
+var dbPromise = MongoClient.connectAsync(dbUri);
 var todoLists = null;
 
 dbPromise.then(function (db) {
